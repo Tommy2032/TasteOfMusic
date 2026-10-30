@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TasteOfMusic — Сравнение плейлистов Яндекс Музыки</title>
+  <base href="/taste-of-music/">
+  <link rel="stylesheet" href="static/css/style.css">
+  <!-- Local libraries: no external CDN dependencies -->
+  <script src="static/js/tailwind.js"></script>
+  <script src="static/js/lucide.min.js"></script>
+  <script src="static/js/chart.min.js"></script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎵</text></svg>">
+</head>
+<body class="text-gray-100 flex flex-col min-h-screen">
+
+  <!-- Header -->
+  <header class="border-b border-white/10 bg-black/40 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-yellow-500 via-amber-400 to-yellow-300 flex items-center justify-center shadow-md shadow-yellow-500/20 flex-shrink-0">
+          <svg class="w-5 h-5 text-black" viewBox="0 0 32 32" fill="currentColor" stroke="currentColor" stroke-width="0.8" stroke-linejoin="round" aria-label="7">
+            <polygon points="7.5,5.5 24.5,5.5 14.5,26.5 9.5,26.5 17.26,10.2 7.5,10.2" />
+          </svg>
+        </div>
+        <div class="flex flex-col justify-center">
+          <div class="flex items-center gap-2">
+            <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-yellow-400 via-amber-200 to-white bg-clip-text text-transparent leading-none">
+              TasteOfMusic
+            </span>
+            <span class="hidden sm:inline-block text-[11px] text-gray-400 font-mono leading-none">Яндекс Музыка</span>
+          </div>
+          <a href="https://7om32.ru" class="inline-flex items-center gap-1 text-xs text-yellow-400/90 hover:text-yellow-300 font-medium transition leading-none mt-1.5">
+            <span>Разработчик: 7om32</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 sm:gap-3">
+        <a href="https://music.yandex.ru" target="_blank" rel="noopener noreferrer" class="hidden sm:flex items-center gap-1.5 text-xs text-gray-400 hover:text-white px-2 py-1 transition">
+          <span>Яндекс Музыка</span>
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- Hero Intro -->
+    <div class="text-center max-w-3xl mx-auto pt-2 pb-4">
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">
+        Сравните два плейлиста <span class="bg-gradient-to-r from-yellow-400 to-amber-300 bg-clip-text text-transparent">Яндекс Музыки</span>
+      </h1>
+      <p class="mt-3 text-base sm:text-lg text-gray-400">
+        Узнайте процент совпадения ваших музыкальных вкусов, найдите одинаковые треки и общих исполнителей в удобном дашборде.
+      </p>
+    </div>
+
+    <!-- Input Box Card -->
+    <div class="glass-panel p-4 sm:p-6 md:p-8 relative overflow-hidden">
+      <!-- Glow ambient -->
+      <div class="absolute -top-24 -left-24 w-72 h-72 bg-yellow-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <!-- Form Inputs Container -->
+      <form id="compare-form" class="space-y-6" onsubmit="event.preventDefault();">
+        
+        <!-- URL Mode Inputs -->
+        <div id="container-url-mode" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Playlist 1 -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <label for="url1" class="text-sm font-semibold flex items-center gap-2 text-yellow-300">
+                <span class="w-5 h-5 rounded-full bg-yellow-400/20 text-yellow-400 flex items-center justify-center text-xs">1</span>
+                Первый плейлист (URL)
+              </label>
+              <span class="text-xs text-gray-500">например, ваш плейлист</span>
+            </div>
+            <div class="relative">
+              <i data-lucide="link" class="w-4 h-4 text-gray-500 absolute left-3.5 top-3.5"></i>
+              <input 
+                type="url" 
+                id="url1" 
+                name="url1"
+                placeholder="https://music.yandex.ru/playlists/lk.0ce106d6-..." 
+                class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-black/50 border border-white/10 focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 outline-none text-sm placeholder-gray-600 transition"
+                required
+              >
+            </div>
+            <p class="text-[11px] text-gray-500">Поддерживаются ссылки формата <code>/playlists/{uuid}</code> и <code>/users/.../playlists/...</code></p>
+          </div>
+
+          <!-- Playlist 2 -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <label for="url2" class="text-sm font-semibold flex items-center gap-2 text-purple-300">
+                <span class="w-5 h-5 rounded-full bg-purple-400/20 text-purple-400 flex items-center justify-center text-xs">2</span>
+                Второй плейлист (URL)
+              </label>
+              <span class="text-xs text-gray-500">плейлист друга</span>
+            </div>
+            <div class="relative">
+              <i data-lucide="link" class="w-4 h-4 text-gray-500 absolute left-3.5 top-3.5"></i>
+              <input 
+                type="url" 
+                id="url2" 
+                name="url2"
+                placeholder="https://music.yandex.ru/users/.../playlists/..." 
+                class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-black/50 border border-white/10 focus:border-purple-400 focus:ring-1 focus:ring-purple-400 outline-none text-sm placeholder-gray-600 transition"
+                required
+              >
+            </div>
+            <p class="text-[11px] text-gray-500">Убедитесь, что оба плейлиста публичные (открыты по ссылке)</p>
+          </div>
+        </div>
+
+        <!-- Action Submit -->
+        <div class="flex items-center justify-center pt-2">
+          <button 
+            type="submit" 
+            id="btn-submit"
+            class="w-full sm:w-auto min-w-[240px] px-8 py-3.5 rounded-xl font-bold text-black bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-500 hover:from-yellow-300 hover:to-yellow-400 shadow-lg shadow-yellow-500/20 transform hover:-translate-y-0.5 active:translate-y-0 transition duration-150 flex items-center justify-center gap-2 text-base"
+          >
+            <i data-lucide="zap" class="w-5 h-5 fill-black"></i>
+            <span id="btn-text">Сравнить плейлисты</span>
+            <div id="btn-spinner" class="hidden animate-spin rounded-full h-5 w-5 border-2 border-black border-t-transparent"></div>
+          </button>
+        </div>
+
+      </form>
+
+      <!-- Error alert box -->
+      <div id="error-box" class="hidden mt-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm flex items-start gap-3">
+        <i data-lucide="alert-circle" class="w-5 h-5 flex-shrink-0 text-red-400 mt-0.5"></i>
+        <div class="flex-1">
+          <div class="font-semibold text-red-200">Не удалось выполнить сравнение</div>
+          <div id="error-message" class="text-xs text-red-300/90 mt-1"></div>
+          
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Results Section (Hidden until compared) -->
+    <div id="results-section" class="hidden space-y-8 animate-fade-in">
+
+      <!-- Hero Compatibility Card -->
+      <div class="glass-panel p-6 sm:p-8 bg-gradient-to-br from-yellow-500/5 via-black/40 to-purple-500/5 relative overflow-hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          
+          <!-- Playlist 1 Mini Info -->
+          <div class="lg:col-span-4 flex items-center gap-4 p-4 rounded-xl bg-black/40 border border-white/5">
+            <img id="p1-cover" src="" alt="Cover" class="w-20 h-20 rounded-lg object-cover shadow-md bg-zinc-800 flex-shrink-0">
+            <div class="min-w-0 flex-1">
+              <span class="badge badge-yellow mb-1">Плейлист 1</span>
+              <h3 id="p1-title" class="font-bold text-base truncate text-white" title="">Название</h3>
+              <p id="p1-owner" class="text-xs text-gray-400 truncate">Автор</p>
+              <div class="mt-2 text-xs text-gray-400">
+                Всего треков: <span id="p1-count" class="font-bold text-white">0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Compatibility Score Gauge -->
+          <div class="lg:col-span-4 flex flex-col items-center justify-center text-center px-4 py-2">
+            <div class="relative w-36 h-36 flex items-center justify-center mb-2">
+              <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="42" stroke="rgba(255,255,255,0.08)" stroke-width="8" fill="transparent" />
+                <circle 
+                  id="score-circle" 
+                  cx="50" 
+                  cy="50" 
+                  r="42" 
+                  stroke="url(#scoreGrad)" 
+                  stroke-width="8" 
+                  stroke-dasharray="264" 
+                  stroke-dashoffset="264" 
+                  stroke-linecap="round" 
+                  fill="transparent" 
+                  class="transition-all duration-1000 ease-out"
+                />
+                <defs>
+                  <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#ffcc00" />
+                    <stop offset="100%" stop-color="#a855f7" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <span id="score-number" class="text-3xl sm:text-4xl font-extrabold text-white">0%</span>
+                <span class="text-[10px] uppercase font-bold tracking-wider text-gray-400">Совпадение</span>
+              </div>
+            </div>
+
+            <div id="verdict-title" class="text-lg font-bold text-yellow-300">На одной волне 🌊</div>
+            <p id="verdict-desc" class="text-xs text-gray-400 mt-1 max-w-xs">
+              Анализ схожести композиций и артистов.
+            </p>
+          </div>
+
+          <!-- Playlist 2 Mini Info -->
+          <div class="lg:col-span-4 flex items-center gap-4 p-4 rounded-xl bg-black/40 border border-white/5">
+            <img id="p2-cover" src="" alt="Cover" class="w-20 h-20 rounded-lg object-cover shadow-md bg-zinc-800 flex-shrink-0">
+            <div class="min-w-0 flex-1">
+              <span class="badge badge-purple mb-1">Плейлист 2</span>
+              <h3 id="p2-title" class="font-bold text-base truncate text-white" title="">Название</h3>
+              <p id="p2-owner" class="text-xs text-gray-400 truncate">Автор</p>
+              <div class="mt-2 text-xs text-gray-400">
+                Всего треков: <span id="p2-count" class="font-bold text-white">0</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Key Metrics Row -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+        
+        <!-- Metric 1: Matching Tracks -->
+        <div class="glass-panel p-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-gray-400">Общие треки</span>
+            <div class="w-8 h-8 rounded-lg bg-yellow-400/10 text-yellow-400 flex items-center justify-center">
+              <i data-lucide="disc" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="mt-3">
+            <div id="metric-matches" class="text-2xl font-black text-white">0</div>
+            <div class="text-[11px] text-yellow-400/80 mt-0.5">одинаковых композиций</div>
+          </div>
+        </div>
+
+        <!-- Metric 2: Shared Artists -->
+        <div class="glass-panel p-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-gray-400">Общие артисты</span>
+            <div class="w-8 h-8 rounded-lg bg-purple-400/10 text-purple-400 flex items-center justify-center">
+              <i data-lucide="users" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="mt-3">
+            <div id="metric-artists" class="text-2xl font-black text-white">0</div>
+            <div class="text-[11px] text-purple-300/80 mt-0.5">любимых исполнителей</div>
+          </div>
+        </div>
+
+        <!-- Metric 3: Shared Duration -->
+        <div class="glass-panel p-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-gray-400">Общее время</span>
+            <div class="w-8 h-8 rounded-lg bg-cyan-400/10 text-cyan-400 flex items-center justify-center">
+              <i data-lucide="clock" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="mt-3">
+            <div id="metric-duration" class="text-2xl font-black text-white">0:00</div>
+            <div class="text-[11px] text-cyan-300/80 mt-0.5">совпадающей музыки</div>
+          </div>
+        </div>
+
+        <!-- Metric 4: % of Playlist 1 -->
+        <div class="glass-panel p-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-gray-400">Доля в Пл. 1</span>
+            <div class="w-8 h-8 rounded-lg bg-yellow-400/10 text-yellow-400 flex items-center justify-center text-xs font-bold">
+              #1
+            </div>
+          </div>
+          <div class="mt-3">
+            <div id="metric-pct1" class="text-2xl font-black text-white">0%</div>
+            <div class="text-[11px] text-gray-400 mt-0.5">от первого плейлиста</div>
+          </div>
+        </div>
+
+        <!-- Metric 5: % of Playlist 2 -->
+        <div class="glass-panel p-4 flex flex-col justify-between col-span-2 sm:col-span-1">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-gray-400">Доля в Пл. 2</span>
+            <div class="w-8 h-8 rounded-lg bg-purple-400/10 text-purple-400 flex items-center justify-center text-xs font-bold">
+              #2
+            </div>
+          </div>
+          <div class="mt-3">
+            <div id="metric-pct2" class="text-2xl font-black text-white">0%</div>
+            <div class="text-[11px] text-gray-400 mt-0.5">от второго плейлиста</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Charts & Visuals Row -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Overlap Distribution Chart -->
+        <div class="lg:col-span-5 glass-panel p-5 flex flex-col">
+          <h3 class="text-sm font-semibold flex items-center gap-2 mb-4 text-gray-200">
+            <i data-lucide="pie-chart" class="w-4 h-4 text-yellow-400"></i>
+            Распределение композиций
+          </h3>
+          <div class="flex-1 flex items-center justify-center relative min-h-[200px]">
+            <canvas id="chart-distribution" class="max-h-[190px]"></canvas>
+          </div>
+          <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-white/5 text-center text-xs">
+            <div>
+              <div class="text-gray-400">Уник. в #1</div>
+              <div id="legend-u1" class="font-bold text-yellow-400">0</div>
+            </div>
+            <div>
+              <div class="text-gray-400">Общие</div>
+              <div id="legend-shared" class="font-bold text-emerald-400">0</div>
+            </div>
+            <div>
+              <div class="text-gray-400">Уник. в #2</div>
+              <div id="legend-u2" class="font-bold text-purple-400">0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shared Artists Leaderboard -->
+        <div class="lg:col-span-7 glass-panel p-5 flex flex-col">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-semibold flex items-center gap-2 text-gray-200">
+              <i data-lucide="mic-2" class="w-4 h-4 text-purple-400"></i>
+              Топ общих исполнителей
+            </h3>
+            <span id="shared-artists-counter" class="text-xs text-gray-400">0 найдено</span>
+          </div>
+          
+          <div id="shared-artists-list" class="flex-1 space-y-2.5 max-h-[240px] overflow-y-auto pr-1">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Dedicated Matching Tracks & Explorer Section -->
+      <div class="glass-panel overflow-hidden">
+        
+        <!-- Tabs Header -->
+        <div class="border-b border-white/10 px-6 pt-4 flex items-center justify-between flex-wrap gap-4 bg-black/30">
+          <div class="flex items-center space-x-1 sm:space-x-4">
+            <button id="tab-btn-matches" class="tab-button active py-3 px-3 sm:px-4 text-sm font-semibold text-yellow-400 border-b-2 border-yellow-400 flex items-center gap-2 transition">
+              <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+              <span>Совпадающие треки</span>
+              <span id="tab-matches-badge" class="ml-1 px-2 py-0.5 text-xs rounded-full bg-yellow-400/20 text-yellow-300 font-bold">0</span>
+            </button>
+
+            <button id="tab-btn-p1" class="tab-button py-3 px-3 sm:px-4 text-sm font-semibold text-gray-400 hover:text-white border-b-2 border-transparent flex items-center gap-2 transition">
+              <i data-lucide="list-music" class="w-4 h-4"></i>
+              <span>Плейлист 1</span>
+              <span id="tab-p1-badge" class="ml-1 px-2 py-0.5 text-xs rounded-full bg-white/10 text-gray-300">0</span>
+            </button>
+
+            <button id="tab-btn-p2" class="tab-button py-3 px-3 sm:px-4 text-sm font-semibold text-gray-400 hover:text-white border-b-2 border-transparent flex items-center gap-2 transition">
+              <i data-lucide="list-music" class="w-4 h-4"></i>
+              <span>Плейлист 2</span>
+              <span id="tab-p2-badge" class="ml-1 px-2 py-0.5 text-xs rounded-full bg-white/10 text-gray-300">0</span>
+            </button>
+          </div>
+
+          <!-- Export & Action Buttons -->
+          <div class="flex items-center gap-2 pb-3 sm:pb-0">
+            <button id="btn-copy-matches" class="text-xs px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-200 border border-white/10 flex items-center gap-1.5 transition" title="Копировать список совпадений">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+              <span>Копировать список</span>
+            </button>
+            <button id="btn-export-txt" class="text-xs px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-200 border border-white/10 flex items-center gap-1.5 transition" title="Скачать в формате TXT">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>
+              <span>TXT</span>
+            </button>
+            <button id="btn-export-csv" class="text-xs px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-200 border border-white/10 flex items-center gap-1.5 transition" title="Скачать в формате CSV">
+              <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i>
+              <span>CSV</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="p-4 bg-black/20 border-b border-white/5 flex items-center justify-between flex-wrap gap-4">
+          <div class="relative flex-1 min-w-[240px] max-w-md">
+            <i data-lucide="search" class="w-4 h-4 text-gray-500 absolute left-3 top-3"></i>
+            <input 
+              type="text" 
+              id="track-search-input" 
+              placeholder="Поиск по названию трека или исполнителю..." 
+              class="w-full pl-9 pr-4 py-2 rounded-lg bg-black/40 border border-white/10 focus:border-yellow-400 outline-none text-xs text-white placeholder-gray-500 transition"
+            >
+          </div>
+          <div class="text-xs text-gray-400">
+            Показано треков: <span id="filtered-tracks-count" class="font-bold text-white">0</span>
+          </div>
+        </div>
+
+        <!-- Track List Table View -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-black/40 text-gray-400 uppercase font-medium tracking-wider border-b border-white/5">
+              <tr>
+                <th class="py-3 px-4 w-12 text-center">#</th>
+                <th class="py-3 px-4 w-14">Обложка</th>
+                <th class="py-3 px-4">Название трека</th>
+                <th class="py-3 px-4">Исполнитель</th>
+                <th class="py-3 px-4 hidden md:table-cell">Альбом</th>
+                <th class="py-3 px-4 w-20 text-center">Длит.</th>
+                <th class="py-3 px-4 w-28 text-center">Действие</th>
+              </tr>
+            </thead>
+            <tbody id="tracks-table-body" class="divide-y divide-white/5">
+              <!-- Dynamically rendered -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Empty state within table -->
+        <div id="table-empty-state" class="hidden py-12 text-center text-gray-500">
+          <i data-lucide="music" class="w-8 h-8 mx-auto mb-2 text-gray-600"></i>
+          <div>Ничего не найдено по вашему запросу</div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="mt-auto border-t border-white/10 bg-black/40 py-6 text-center text-xs text-gray-500">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div>
+        TasteOfMusic — Сравнение плейлистов Яндекс Музыки
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="https://7om32.ru" class="text-yellow-400 hover:text-yellow-300 font-medium transition">Разработчик: 7om32</a>
+        <span>•</span>
+        <a href="https://music.yandex.ru" target="_blank" rel="noopener noreferrer" class="hover:text-white transition">Яндекс Музыка</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="glass-panel px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-yellow-400/30 bg-black/90">
+      <i id="toast-icon" data-lucide="check-circle" class="w-5 h-5 text-yellow-400"></i>
+      <span id="toast-message" class="text-sm font-medium text-white">Уведомление</span>
+    </div>
+  </div>
+
+  <script src="static/js/app.js"></script>
+</body>
+</html>
+
